@@ -11,8 +11,8 @@ resource "aws_instance" "terraform" {
 
 }
 
-resource "aws_security_group" "allow-all" { #allow-all --> for refering this in another resource in tf; tf ref
-  name = "allow-all-sg" #allow-all-sg --> security group name
+resource "aws_security_group" "allow-all" { #allow-all-->for refering this in another resource in tf; tf ref
+  name = "allow-all-sg" #allow-all-sg --> security group name; in aws console
 
   egress { #outgoing traffic
     from_port       = 0 #from_port 0 to to_port 0 means all ports
@@ -29,7 +29,7 @@ resource "aws_security_group" "allow-all" { #allow-all --> for refering this in 
   }
 
   tags = {
-    Name = "Terraform-sg" #name --> user display
+    Name = "Terraform-sg" #name --> for user display; in aws console
   }
 
 }
