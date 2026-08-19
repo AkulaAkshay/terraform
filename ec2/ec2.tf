@@ -29,7 +29,7 @@ resource "aws_security_group" "allow-all" { #allow-all-->for refering this in an
   }
 
   tags = {
-    Name = "Terraform-sg" #name --> for user display; in aws console #
+    Name = "Terraform-sg" #name --> for user display; in aws console 
   }
 
 }
