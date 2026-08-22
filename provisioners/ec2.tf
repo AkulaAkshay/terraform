@@ -1,20 +1,22 @@
 resource "aws_instance" "terraform" {
     #key, value --> are nothing but arguments
-  #count = 4
-  count = len(var.instances)
   ami           = "ami-0220d79f3f480ecf5"
   instance_type = "t3.micro"
   vpc_security_group_ids = [aws_security_group.allow-all.id]
 
   tags = {
-    Name = var.instances[count.index]
+    Name = "Terraform control"
     Terraform = "true"
+  }
+
+  provisioner "local-exec" {
+    command = "echo The server's PRIVATE-IP address is ${self.private_ip}"
   }
 
 }
 
 resource "aws_security_group" "allow-all" { #allow-all-->for refering this in another resource in tf; tf ref
-  name = "allow-all-sg" #allow-all-sg --> security group name; in aws console
+  name = "allow-all-sg" #allow-all-sg --> security group name; in aws console.
 
   egress { #outgoing traffic
     from_port       = 0 #from_port 0 to to_port 0 means all ports
@@ -24,7 +26,7 @@ resource "aws_security_group" "allow-all" { #allow-all-->for refering this in an
   }
 
   ingress { #incomming traffic
-    from_port       = 0 #from_port 0 to to_port 0 means all ports
+    from_port       = 0 
     to_port         = 0
     protocol        = "-1" #-1 means all protocols
     cidr_blocks = ["0.0.0.0/0"] #0.0.0.0/0 --> means internet
@@ -33,5 +35,4 @@ resource "aws_security_group" "allow-all" { #allow-all-->for refering this in an
   tags = {
     Name = "Terraform-sg" #name --> for user display; in aws console 
   }
-
 }
