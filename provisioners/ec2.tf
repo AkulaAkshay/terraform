@@ -10,10 +10,40 @@ resource "aws_instance" "terraform" {
   }
 
   provisioner "local-exec" {
-    command = "echo The server's PRIVATE-IP address is ${self.private_ip}"
+    command = "echo The server's PRIVATE-IP address is ${self.private_ip} > inventory"
+    on_failure = continue # if the shell comannd is failed, still aws resource will be created
+  }
+
+  provisioner "local-exec" {
+    command = "echo Instance is destroyed"
+    when = destroy
+  }
+
+  connection {
+    type        = "ssh"
+    user        = "ec2-user"
+    password    = "DevOps321"     # Local path to your private key
+    host        = self.public_ip           # 'self' references parent attributes without loop errors
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo dnf install nginx -y",
+      "sudo systemctl start nginx"
+   ]
+  }
+
+  provisioner "remote-exec" { #destroy -->servers are removed immedietely then, present users get interreputed. inorder to not to disturb the present users and stop accepting the new connections and after serving to all the exisisting customers we can destroy the server. for this we use stop the server
+    inline = [
+      "sudo systemctl stop nginx -y",
+      "echo 'successfully stopped the nginx' "
+   ]
+   when = destroy #firstly it stops the server and then destroy the server
   }
 
 }
+
+
 
 resource "aws_security_group" "allow-all" { #allow-all-->for refering this in another resource in tf; tf ref
   name = "allow-all-sg" #allow-all-sg --> security group name; in aws console.
